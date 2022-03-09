@@ -38,7 +38,7 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
     if (state.puzzleStatus == PuzzleStatus.incomplete) {
       if (state.puzzle.isTileMovable(tappedTile)) {
         final mutablePuzzle = Puzzle(tiles: [...state.puzzle.tiles]);
-        final puzzle = mutablePuzzle.moveTiles(tappedTile, []);
+        final puzzle = mutablePuzzle.moveTiles(tappedTile, [], []);
         if (puzzle.isComplete()) {
           emit(
             state.copyWith(
@@ -63,7 +63,10 @@ class PuzzleBloc extends Bloc<PuzzleEvent, PuzzleState> {
         }
       } else {
         emit(
-          state.copyWith(tileMovementStatus: TileMovementStatus.cannotBeMoved),
+          state.copyWith(
+            tileMovementStatus: TileMovementStatus.cannotBeMoved,
+            puzzle: state.puzzle..movedTiles.clear(),
+          ),
         );
       }
     } else {

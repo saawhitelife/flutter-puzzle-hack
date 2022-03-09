@@ -371,7 +371,7 @@ void main() {
           ],
         );
         expect(
-          mutableSolvable2x2Puzzle.moveTiles(solvable2x2Tile3, []),
+          mutableSolvable2x2Puzzle.moveTiles(solvable2x2Tile3, [], []),
           newPuzzle,
         );
       });
@@ -401,7 +401,7 @@ void main() {
           ],
         );
         expect(
-          mutableUnsolvable3x3Puzzle.moveTiles(unsolvable3x3Tile3, []),
+          mutableUnsolvable3x3Puzzle.moveTiles(unsolvable3x3Tile3, [], []),
           newPuzzle,
         );
       });

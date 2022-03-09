@@ -10,10 +10,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:http/http.dart' as http;
 import 'package:very_good_slide_puzzle/helpers/helpers.dart';
 import 'package:very_good_slide_puzzle/l10n/l10n.dart';
+import 'package:very_good_slide_puzzle/models/models.dart';
 import 'package:very_good_slide_puzzle/puzzle/puzzle.dart';
 
 class App extends StatefulWidget {
@@ -53,11 +55,51 @@ class _AppState extends State<App> {
   late final PlatformHelper _platformHelper;
   late final Timer _timer;
 
+  final StreamController<MouseEvent> _mouseEventController =
+      StreamController<MouseEvent>.broadcast();
+
+  Sink<MouseEvent> get _mouseEventSink => _mouseEventController.sink;
+  Stream<MouseEvent> get _mouseEventStream => _mouseEventController.stream;
+
+  void _onEnter(PointerEvent event) {
+    _mouseEventSink.add(
+      MouseEvent(
+        type: MouseEventType.enter,
+        x: event.position.dx,
+        y: event.position.dy,
+      ),
+    );
+  }
+
+  void _onHover(PointerEvent event) {
+    _mouseEventSink.add(
+      MouseEvent(
+        type: MouseEventType.hover,
+        x: event.position.dx,
+        y: event.position.dy,
+      ),
+    );
+  }
+
+  void _onExit(PointerEvent event) {
+    _mouseEventSink.add(
+      MouseEvent(
+        type: MouseEventType.exit,
+        x: event.position.dx,
+        y: event.position.dy,
+      ),
+    );
+  }
+
+  ByteData? _blueWalkie;
+
   @override
   void initState() {
     super.initState();
 
     _platformHelper = widget._platformHelperFactory();
+
+    precacheRive();
 
     _timer = Timer(const Duration(milliseconds: 20), () {
       for (var i = 1; i <= 15; i++) {
@@ -148,6 +190,13 @@ class _AppState extends State<App> {
     });
   }
 
+  Future<void> precacheRive() async {
+    final blueWalkie = await rootBundle.load('assets/rive/walkie.riv');
+    setState(() {
+      _blueWalkie = blueWalkie;
+    });
+  }
+
   /// Prefetches the given [filePath] to memory.
   Future<void> prefetchToMemory(String filePath) async {
     if (_platformHelper.isWeb) {
@@ -164,6 +213,7 @@ class _AppState extends State<App> {
 
   @override
   void dispose() {
+    _mouseEventController.close();
     _timer.cancel();
     super.dispose();
   }
@@ -182,7 +232,50 @@ class _AppState extends State<App> {
         GlobalMaterialLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const PuzzlePage(),
+      home: RiveProvider(
+        blueWalkie: _blueWalkie,
+        child: MouseRegion(
+          onEnter: _onEnter,
+          onExit: _onExit,
+          onHover: _onHover,
+          child: MouseEventsProvider(
+            mouseEventStream: _mouseEventStream,
+            child: const PuzzlePage(),
+          ),
+        ),
+      ),
     );
   }
+}
+
+class RiveProvider extends InheritedWidget {
+  const RiveProvider({
+    Key? key,
+    required this.blueWalkie,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  final ByteData? blueWalkie;
+
+  static RiveProvider of(BuildContext context) =>
+      context.findAncestorWidgetOfExactType<RiveProvider>()!;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
+}
+
+class MouseEventsProvider extends InheritedWidget {
+  const MouseEventsProvider({
+    Key? key,
+    required this.mouseEventStream,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  final Stream<MouseEvent> mouseEventStream;
+
+  static MouseEventsProvider of(BuildContext context) =>
+      context.findAncestorWidgetOfExactType<MouseEventsProvider>()!;
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) => false;
 }

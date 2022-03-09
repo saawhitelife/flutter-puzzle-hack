@@ -69,7 +69,7 @@ abstract class PuzzleColors {
   static const Color green50 = Color(0xFF00857F);
 
   /// Blue primary
-  static const Color bluePrimary = Color(0xFF003064);
+  static const Color bluePrimary = Color.fromARGB(255, 1, 111, 228);
 
   /// Blue 90
   static const Color blue90 = Color(0xFF75BFFF);

@@ -11,6 +11,7 @@ import 'package:very_good_slide_puzzle/simple/simple.dart';
 import 'package:very_good_slide_puzzle/theme/theme.dart';
 import 'package:very_good_slide_puzzle/timer/timer.dart';
 import 'package:very_good_slide_puzzle/typography/typography.dart';
+import 'package:very_good_slide_puzzle/walkie/walkie.dart';
 
 /// {@template puzzle_page}
 /// The root page of the puzzle UI.
@@ -20,7 +21,9 @@ import 'package:very_good_slide_puzzle/typography/typography.dart';
 /// {@endtemplate}
 class PuzzlePage extends StatelessWidget {
   /// {@macro puzzle_page}
-  const PuzzlePage({Key? key}) : super(key: key);
+  const PuzzlePage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,21 @@ class PuzzlePage extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (_) => WalkieThemeBloc(
+            themes: const [
+              BlueWalkieTheme(),
+              GreenWalkieTheme(),
+              YellowWalkieTheme()
+            ],
+          ),
+        ),
+        BlocProvider(
+          create: (_) => WalkiePuzzleBloc(
+            secondsToBegin: 3,
+            ticker: const Ticker(),
+          ),
+        ),
+        BlocProvider(
           create: (_) => DashatarPuzzleBloc(
             secondsToBegin: 3,
             ticker: const Ticker(),
@@ -44,8 +62,9 @@ class PuzzlePage extends StatelessWidget {
         BlocProvider(
           create: (context) => ThemeBloc(
             initialThemes: [
-              const SimpleTheme(),
+              context.read<WalkieThemeBloc>().state.theme,
               context.read<DashatarThemeBloc>().state.theme,
+              const SimpleTheme(),
             ],
           ),
         ),
@@ -81,11 +100,24 @@ class PuzzleView extends StatelessWidget {
       body: AnimatedContainer(
         duration: PuzzleThemeAnimationDuration.backgroundColorChange,
         decoration: BoxDecoration(color: theme.backgroundColor),
-        child: BlocListener<DashatarThemeBloc, DashatarThemeState>(
-          listener: (context, state) {
-            final dashatarTheme = context.read<DashatarThemeBloc>().state.theme;
-            context.read<ThemeBloc>().add(ThemeUpdated(theme: dashatarTheme));
-          },
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<DashatarThemeBloc, DashatarThemeState>(
+              listener: (context, state) {
+                final dashatarTheme =
+                    context.read<DashatarThemeBloc>().state.theme;
+                context
+                    .read<ThemeBloc>()
+                    .add(ThemeUpdated(theme: dashatarTheme));
+              },
+            ),
+            BlocListener<WalkieThemeBloc, WalkieThemeState>(
+              listener: (context, state) {
+                final walkieTheme = context.read<WalkieThemeBloc>().state.theme;
+                context.read<ThemeBloc>().add(ThemeUpdated(theme: walkieTheme));
+              },
+            ),
+          ],
           child: MultiBlocProvider(
             providers: [
               BlocProvider(

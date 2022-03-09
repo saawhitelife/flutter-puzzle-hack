@@ -139,5 +139,85 @@
     "dashatarSuccessShareText": "Just solved the #FlutterPuzzleHack! Check it out ↓",
     "@dashatarSuccessShareText": {
         "description": "The text to share for this Flutter Puzzle challenge, shown in the Dashatar success state"
+    },
+    "walkieBlueDashLabelText": "Dumbbell Dash",
+    "@walkieBlueDashLabelText": {
+        "description": "Semantic label for the blue Dash"
+    },
+    "walkieGreenDashLabelText": "Skateboard Dash",
+    "@walkieGreenDashLabelText": {
+        "description": "Semantic label for the green Dash"
+    },
+    "walkieYellowDashLabelText": "Sandwich Dash",
+    "@walkieYellowDashLabelText": {
+        "description": "Semantic label for the yellow Dash"
+    },
+    "walkieCountdownGo": "GO!",
+    "@walkieCountdownGo": {
+        "description": "Shown when the countdown has just finished and the puzzle is about to start"
+    },
+    "walkieStartGame": "Start Game",
+    "@walkieStartGame": {
+        "description": "Shown before the puzzle is started"
+    },
+    "walkieGetReady": "Get ready...",
+    "@walkieStartPuzzle": {
+        "description": "Shown when the puzzle is loading"
+    },
+    "walkieRestart": "Restart",
+    "@walkieRestart": {
+        "description": "Shown after the puzzle is started and may be restarted"
+    },
+    "walkieSuccessCompleted": "Puzzle challenge completed",
+    "@walkieSuccessCompleted": {
+        "description": "Shown as a title in the Aquarium success state"
+    },
+    "walkieSuccessWellDone": "Well done.\nCongrats!",
+    "@walkieSuccessWellDone": {
+        "description": "Shown as a subtitle in the Aquarium success state"
+    },
+    "walkieSuccessScore": "Score",
+    "@walkieSuccessScore": {
+        "description": "Shown as a score title in the Aquarium success state"
+    },
+    "walkieSuccessNumberOfMoves": "{numberOfMoves} Moves",
+    "@walkieSuccessNumberOfMoves": {
+        "description": "Shown as a number of moves in the Aquarium success state",
+        "placeholders": {
+            "numberOfMoves": {
+                "type": "String",
+                "example": "5"
+            }
+        }
+    },
+    "walkieSuccessShareYourScoreTitle": "Share your score!",
+    "@walkieSuccessShareYourScoreTitle": {
+        "description": "Shown as a share title in the Aquarium success state"
+    },
+    "walkieSuccessShareYourScoreMessage": "Share this puzzle to challenge your friends and be sure to check out the Flutter Puzzle Hack.",
+    "@walkieSuccessShareYourScoreMessage": {
+        "description": "Shown as a share message in the Aquarium success state"
+    },
+    "walkieSuccessShareText": "Just solved the #FlutterPuzzleHack! Check it out ↓",
+    "@walkieSuccessShareText": {
+        "description": "The text to share for this Flutter Puzzle challenge, shown in the Aquarium success state"
+    },
+    "walkiePuzzleDurationLabelText": "{hours} hours {minutes} minutes {seconds} seconds",
+    "@walkiePuzzleDurationLabelText": {
+        "description": "Semantic label for the Aquarium timer",
+        "placeholders": {
+            "hours": {
+                "type": "String",
+                "example": "2"
+            },
+            "minutes": {
+                "type": "String",
+                "example": "6"
+            },
+            "seconds": {
+                "type": "String",
+                "example": "24"
+            }
+        }
     }
 }

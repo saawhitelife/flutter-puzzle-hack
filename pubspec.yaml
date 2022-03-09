@@ -20,6 +20,8 @@ dependencies:
   google_fonts: ^2.1.0
   intl: ^0.17.0
   just_audio: ^0.9.18
+  rive: ^0.8.1
+  rxdart: ^0.27.3
   universal_platform: ^1.0.0+1
   url_launcher: ^6.0.17
 
@@ -36,6 +38,7 @@ flutter:
   assets:
     - assets/audio/
     - assets/images/
+    - assets/rive/
     - assets/images/audio_control/
     - assets/images/dashatar/gallery/
     - assets/images/dashatar/success/

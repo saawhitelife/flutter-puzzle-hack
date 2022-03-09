@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
 import 'package:very_good_slide_puzzle/models/models.dart';
+import 'package:very_good_slide_puzzle/models/moved_tile.dart';
 
 // A 3x3 puzzle board visualization:
 //
@@ -35,10 +36,16 @@ import 'package:very_good_slide_puzzle/models/models.dart';
 /// {@endtemplate}
 class Puzzle extends Equatable {
   /// {@macro puzzle}
-  const Puzzle({required this.tiles});
+  const Puzzle({
+    required this.tiles,
+    this.movedTiles = const [],
+  });
 
   /// List of [Tile]s representing the puzzle's current arrangement.
   final List<Tile> tiles;
+
+  /// Tiles that has been moved last move
+  final List<MovedTile> movedTiles;
 
   /// Get the dimension of a puzzle given its tile arrangement.
   ///
@@ -163,11 +170,21 @@ class Puzzle extends Equatable {
   ///
   // Recursively stores a list of all tiles that need to be moved and passes the
   // list to _swapTiles to individually swap them.
-  Puzzle moveTiles(Tile tile, List<Tile> tilesToSwap) {
+  Puzzle moveTiles(
+    Tile tile,
+    List<Tile> tilesToSwap,
+    List<MovedTile> movedTiles,
+  ) {
+    late MoveDirection direction;
     final whitespaceTile = getWhitespaceTile();
     final deltaX = whitespaceTile.currentPosition.x - tile.currentPosition.x;
     final deltaY = whitespaceTile.currentPosition.y - tile.currentPosition.y;
-
+    if (deltaX != 0) {
+      direction = deltaX > 0 ? MoveDirection.right : MoveDirection.left;
+    }
+    if (deltaY != 0) {
+      direction = deltaY > 0 ? MoveDirection.bottom : MoveDirection.top;
+    }
     if ((deltaX.abs() + deltaY.abs()) > 1) {
       final shiftPointX = tile.currentPosition.x + deltaX.sign;
       final shiftPointY = tile.currentPosition.y + deltaY.sign;
@@ -176,20 +193,26 @@ class Puzzle extends Equatable {
             tile.currentPosition.x == shiftPointX &&
             tile.currentPosition.y == shiftPointY,
       );
+      movedTiles.add(MovedTile(tile: tile, moveDirection: direction));
       tilesToSwap.add(tile);
-      return moveTiles(tileToSwapWith, tilesToSwap);
+      return moveTiles(tileToSwapWith, tilesToSwap, movedTiles);
     } else {
+      movedTiles.add(MovedTile(tile: tile, moveDirection: direction));
       tilesToSwap.add(tile);
-      return _swapTiles(tilesToSwap);
+      return _swapTiles(tilesToSwap, movedTiles);
     }
   }
 
   /// Returns puzzle with new tile arrangement after individually swapping each
   /// tile in tilesToSwap with the whitespace.
-  Puzzle _swapTiles(List<Tile> tilesToSwap) {
+  Puzzle _swapTiles(
+    List<Tile> tilesToSwap,
+    List<MovedTile> movedTiles,
+  ) {
     for (final tileToSwap in tilesToSwap.reversed) {
       final tileIndex = tiles.indexOf(tileToSwap);
       final tile = tiles[tileIndex];
+      // tile to swap and tile are here
       final whitespaceTile = getWhitespaceTile();
       final whitespaceTileIndex = tiles.indexOf(whitespaceTile);
 
@@ -201,8 +224,7 @@ class Puzzle extends Equatable {
         currentPosition: tile.currentPosition,
       );
     }
-
-    return Puzzle(tiles: tiles);
+    return Puzzle(tiles: tiles, movedTiles: movedTiles);
   }
 
   /// Sorts puzzle tiles so they are in order of their current position.
@@ -211,7 +233,7 @@ class Puzzle extends Equatable {
       ..sort((tileA, tileB) {
         return tileA.currentPosition.compareTo(tileB.currentPosition);
       });
-    return Puzzle(tiles: sortedTiles);
+    return Puzzle(tiles: sortedTiles, movedTiles: movedTiles);
   }
 
   @override
